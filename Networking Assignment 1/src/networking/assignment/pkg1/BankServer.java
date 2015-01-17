@@ -52,4 +52,9 @@ public class BankServer {
         System.out.print("Connections Made since start: ");
         System.out.println(clientConnections);
     }
+    
+    public static int returnClientConnections()
+    {
+        return clientConnections;
+    }
 }

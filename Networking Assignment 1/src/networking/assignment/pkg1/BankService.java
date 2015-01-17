@@ -19,13 +19,14 @@ public class BankService implements Runnable {
     private Socket s;
     private Scanner in;
     private PrintWriter out;
-    private Bank bank;
-    private boolean loggedIn = true;
+    private final Bank bank;
+    private boolean loggedIn;
     
     public BankService(Socket aSocket, Bank aBank)
     {
         s = aSocket;
         bank = aBank;
+        loggedIn = true;
     }
     
     public void run()
@@ -60,66 +61,98 @@ public class BankService implements Runnable {
             String command = in.next();
             if (command.equals("QUIT")){
                 loggedIn = false;
+                return;
             }
             else executeCommand(command);
         }
     }
     public void executeCommand(String command)
     {
-        if (command.equals ("DEPOSIT"))
-        {
-            int account = in.nextInt();
-            double amount = in.nextDouble();
-            bank.deposit(account,amount);
-        }
-        else if (command.equals("WITHDRAW"))
-        {
-            int account = in.nextInt();
-            double amount = in.nextDouble();
-            bank.withdraw(account,amount);
-        }
-        else if (command.equals("QUIT"))
-        {
-            loggedIn = false;
-            return;
-        }
-        else if (command.equals("BALANCE"))
-        {
-            int account = in.nextInt();
-            out.println(account + " " + bank.getBalance(account));
-            out.flush();
-        }
-        else
-        {
-            if (s.getLocalPort() == 8889)
-            {
-                //Possible Admin Commands
-                switch (command) {
-                    case "LOGIN":
-                        break;
-                    case "STATUS":
-                        System.out.println("SERVER ONLINE");
-                        break;
-                    case "PASSWORD":
-                        
-                        break;
-                    case "LOGOUT":
-                        loggedIn = false;
-                        break;
-                    case "SHUTDOWN":
-                        System.exit(1);
-                    default:
-                        out.println("Invalid Command");
-                        break;
+        switch (command) {
+            case "DEPOSIT":
+                {
+                    int account = in.nextInt();
+                    double amount = in.nextDouble();
+                    out.println("DEPOSIT COMPLETED");
+                    out.flush();
+                    bank.deposit(account,amount);
+                    break;
                 }
-            }
-            else
-            {
-                int account = in.nextInt();
-                out.println("Invalid Command");
-                out.flush();
+            case "WITHDRAW":
+                {
+                    int account = in.nextInt();
+                    double amount = in.nextDouble();
+                    out.println("WITHDRAW COMPLETED");
+                    out.flush();
+                    bank.withdraw(account,amount);
+                    break;
+                }
+            case "QUIT":
+                loggedIn = false;
                 return;
-            }
+            case "BALANCE":
+                {
+                    int account = in.nextInt();
+                    out.println("BALANCE: ");
+                    out.println(account + " " + bank.getBalance(account));
+                    out.flush();
+                    break;
+                }
+            default:
+                if (s.getLocalPort() == 8889)
+                {
+                    //Possible Admin Commands
+                    switch (command) {
+                        case "LOGIN":
+                            String loginCredentials = in.next();
+                            if ("ADMIN".equals(loginCredentials))
+                            {
+                                out.println("PASSWORD:" );
+                                out.flush();
+                                loginCredentials = in.next();
+                                if ("PASSWORD".equals(loginCredentials))
+                                {
+                                    out.println("LOGIN SUCCESSFUL. WELCOME CAPTAIN KIRK.");
+                                    out.flush();
+                                }
+                                else
+                                {
+                                    out.println("UNKNOWN PASSWORD. TRY AGAIN. ERROR 296");
+                                    out.flush();
+                                }
+                            }
+                            else
+                            {
+                                out.println("UNKNOWN ACCOUNT. TRY AGAIN. ERROR 295");
+                                out.flush();
+                            }
+                            break;
+                        case "STATUS":
+                            out.println("SERVER ONLINE");
+                            out.print("Connections Made: ");
+                            out.print(BankServer.returnClientConnections());
+                            out.flush();
+                            break;
+                        case "LOGOUT":
+                            loggedIn = false;
+                            break;
+                        case "SHUTDOWN":
+                            out.println("SERVER SHUTTING DOWN");
+                            out.flush();
+                            System.exit(1);
+                        default:
+                            out.println("Invalid Command");
+                            out.flush();
+                            break;
+                    }
+                }
+                else
+                {
+                    int account = in.nextInt();
+                    out.println("Invalid Command");
+                    out.flush();
+                    return;
+                }   break;
         }
     }
 }
