@@ -73,18 +73,29 @@ public class BankService implements Runnable {
                 {
                     int account = in.nextInt();
                     double amount = in.nextDouble();
-                    out.println("DEPOSIT COMPLETED");
+                    bank.deposit(account, amount);
+                    out.print("DEPOSIT COMPLETE: ");
+                    out.print(bank.getBalance(account));
+                    out.println(" CODE 200");
                     out.flush();
-                    bank.deposit(account,amount);
                     break;
                 }
             case "WITHDRAW":
                 {
                     int account = in.nextInt();
                     double amount = in.nextDouble();
-                    out.println("WITHDRAW COMPLETED");
-                    out.flush();
-                    bank.withdraw(account,amount);
+                    if (bank.withdraw(account,amount) == true)
+                    {
+                        out.print("WITHDRAW COMPLETE: ");
+                        out.print(bank.getBalance(account));
+                        out.println(" CODE 200");
+                        out.flush();
+                    }
+                    else
+                    {
+                        out.print("WITHDRAW CANCELLED: ACCOUNT OVERDRAWN");
+                        out.flush();
+                    }
                     break;
                 }
             case "QUIT":
@@ -148,11 +159,10 @@ public class BankService implements Runnable {
                 }
                 else
                 {
-                    int account = in.nextInt();
                     out.println("Invalid Command");
                     out.flush();
                     return;
-                }   break;
+                }
         }
     }
 }

@@ -18,14 +18,25 @@ public class BankAccount {
         totalAmount = 0;
     }
     
-    public void deposit(double amount)
+    public boolean deposit(double amount)
     {
         totalAmount = totalAmount + amount;
+        return true;
     }
-    public void withdraw(double amount)
+    
+    public boolean withdraw(double amount)
     {
-        totalAmount = totalAmount - amount;
+        if (totalAmount - amount > 0)
+        {
+            totalAmount = totalAmount - amount;    
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
+    
     public double returnBalance()
     {
         return totalAmount;

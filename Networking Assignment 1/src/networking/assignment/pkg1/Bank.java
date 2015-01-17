@@ -27,10 +27,17 @@ public class Bank {
         account.deposit(amount);
     }
     
-    public void withdraw(int accountNumber, double amount)
+    public boolean withdraw(int accountNumber, double amount)
     {
         BankAccount account = accounts[accountNumber];
-        account.withdraw(amount);
+        if (account.withdraw(amount) == true)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
     
     public double getBalance(int accountNumber)
