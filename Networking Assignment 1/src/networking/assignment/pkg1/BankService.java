@@ -82,6 +82,10 @@ public class BankService implements Runnable {
             out.flush();
             return;
         }
+        else if (command.equals("QUIT"))
+        {
+            return;
+        }
         out.println(account + " " + bank.getBalance(account));
         out.flush();
     }

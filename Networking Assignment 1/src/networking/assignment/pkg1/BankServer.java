@@ -14,22 +14,42 @@ import java.util.Scanner;
  * @author Aaron
  */
 public class BankServer {
+    public static Bank bank;
+    private static int clientConnections = 0;
     public static void run() throws IOException
     {
         final int ACCOUNTS_LENGTH = 10;
-        Bank bank = new Bank(ACCOUNTS_LENGTH);
-        final int SBAP_PORT = 8888;
-        ServerSocket server = new ServerSocket(SBAP_PORT);
+        bank = new Bank(ACCOUNTS_LENGTH);
         System.out.println("Waiting for clients to connect...");
-        
-        Scanner scanner = new Scanner(System.in);
-        while (!scanner.next().equals("stop"))
+        connectionHandler clientHandler = new connectionHandler();
+        connectionHandler adminHandler = new connectionHandler();
+        clientHandler.setPort(8888);
+        adminHandler.setPort(8889);
+        Thread client = new Thread(clientHandler);
+        Thread admin = new Thread(adminHandler);
+        client.start();
+        admin.start();
+        Scanner newScanner = new Scanner(System.in);
+        while (!newScanner.nextLine().contentEquals("stop"))
         {
-            Socket s = server.accept();
-            System.out.println("Client Connected.");
-            BankService service = new BankService(s,bank);
-            Thread t = new Thread(service);
-            t.start();
+           //System.out.print("poop");
         }
+        clientHandler.closePort();
+        adminHandler.closePort();
+        client.interrupt();
+        admin.interrupt();
+        showTotalConnections();
+        System.exit(clientConnections);
+    }
+    
+    public static void incrementClientConnections()
+    {
+        clientConnections = clientConnections + 1;
+    }
+    
+    public static void showTotalConnections()
+    {
+        System.out.print("Connections Made since start: ");
+        System.out.println(clientConnections);
     }
 }
