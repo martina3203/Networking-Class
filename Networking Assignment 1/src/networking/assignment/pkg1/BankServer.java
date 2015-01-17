@@ -7,7 +7,6 @@ package networking.assignment.pkg1;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Scanner;
 
 /**
  *
@@ -21,21 +20,14 @@ public class BankServer {
         final int SBAP_PORT = 8888;
         ServerSocket server = new ServerSocket(SBAP_PORT);
         System.out.println("Waiting for clients to connect...");
-        inputThread input = new inputThread();
-        input.start();
-        boolean runServer = true;
-        while (runServer == true)
+        
+        while (true)
         {
-            if ("QUIT".equals(input.checkInput()))
-            {
-                break;
-            }
             Socket s = server.accept();
             System.out.println("Client Connected.");
             BankService service = new BankService(s,bank);
             Thread t = new Thread(service);
-            t.start(); 
-           
+            t.start();
         }
     }
 }
