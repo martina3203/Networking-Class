@@ -7,6 +7,7 @@ package networking.assignment.pkg1;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 
 /**
  *
@@ -21,7 +22,8 @@ public class BankServer {
         ServerSocket server = new ServerSocket(SBAP_PORT);
         System.out.println("Waiting for clients to connect...");
         
-        while (true)
+        Scanner scanner = new Scanner(System.in);
+        while (!scanner.next().equals("stop"))
         {
             Socket s = server.accept();
             System.out.println("Client Connected.");
