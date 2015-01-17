@@ -93,7 +93,7 @@ public class BankService implements Runnable {
                     }
                     else
                     {
-                        out.print("WITHDRAW CANCELLED: ACCOUNT OVERDRAWN");
+                        out.print("WITHDRAW CANCELLED: ACCOUNT OVERDRAWN CODE 420 YOLO SWAG");
                         out.flush();
                     }
                     break;
