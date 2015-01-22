@@ -5,6 +5,10 @@
  */
 package networking.assignment.pkg1;
 
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  *
  * @author Aaron
@@ -12,27 +16,50 @@ package networking.assignment.pkg1;
 public class BankAccount {
     
     private double totalAmount;
+    private Lock timeLock;
+    private Condition acceptableDeposit;
     
     public BankAccount()
     {
         totalAmount = 0;
+        timeLock = new ReentrantLock();
+        acceptableDeposit = timeLock.newCondition();
     }
     
-    public boolean deposit(double amount)
+    public boolean deposit(double amount) throws InterruptedException
     {
+        timeLock.lock();
+        if (amount >= 100000)
+        {
+            //Too big for account
+            return false;
+        }
+        while ((totalAmount + amount) >= 100000)
+        {
+            //Start thread to wait for change in amount to enable deposit
+            acceptableDeposit.await();
+        }
         totalAmount = totalAmount + amount;
+        timeLock.unlock();
         return true;
     }
     
     public boolean withdraw(double amount)
     {
+        timeLock.lock();
         if (totalAmount - amount > 0)
         {
-            totalAmount = totalAmount - amount;    
+            totalAmount = totalAmount - amount;
+            if (totalAmount < 100000)
+            {
+                acceptableDeposit.signalAll();
+            }
+            timeLock.unlock();
             return true;
         }
         else
         {
+            timeLock.unlock();
             return false;
         }
     }

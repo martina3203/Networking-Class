@@ -21,7 +21,7 @@ public class Bank {
         }
     }
     
-    public void deposit(int accountNumber, double amount)
+    public void deposit(int accountNumber, double amount) throws InterruptedException
     {
         BankAccount account = accounts[accountNumber];
         account.deposit(amount);

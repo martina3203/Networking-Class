@@ -10,6 +10,8 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -39,7 +41,9 @@ public class BankService implements Runnable {
                 out = new PrintWriter(s.getOutputStream());
                 doService();
             }
-            finally
+            catch (InterruptedException ex) {
+                Logger.getLogger(BankService.class.getName()).log(Level.SEVERE, null, ex);
+            }            finally
             {
                 s.close();
             }
@@ -50,7 +54,7 @@ public class BankService implements Runnable {
         }
     }
     
-    public void doService() throws IOException
+    public void doService() throws IOException, InterruptedException
     {
         while (loggedIn == true)
         {
@@ -66,13 +70,24 @@ public class BankService implements Runnable {
             else executeCommand(command);
         }
     }
-    public void executeCommand(String command)
+    public void executeCommand(String command) throws InterruptedException
     {
         switch (command) {
             case "DEPOSIT":
                 {
-                    int account = in.nextInt();
-                    double amount = in.nextDouble();
+                    int account;
+                    double amount;
+                    if (in.hasNext())
+                    {
+                        account = in.nextInt();
+                        amount = in.nextDouble();
+                    }
+                    else
+                    {
+                        out.println("INVALID COMMAND: UNKNOWN PARAMETERS CODE 298");
+                        out.flush();
+                        break;
+                    }
                     bank.deposit(account, amount);
                     out.print("DEPOSIT COMPLETE: ");
                     out.print(bank.getBalance(account));
@@ -93,7 +108,7 @@ public class BankService implements Runnable {
                     }
                     else
                     {
-                        out.print("WITHDRAW CANCELLED: ACCOUNT OVERDRAWN CODE 420 YOLO SWAG");
+                        out.println("WITHDRAW CANCELLED: ACCOUNT OVERDRAWN CODE 420 YOLO SWAG");
                         out.flush();
                     }
                     break;
