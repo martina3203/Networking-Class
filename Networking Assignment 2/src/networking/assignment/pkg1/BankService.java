@@ -43,7 +43,8 @@ public class BankService implements Runnable {
             }
             catch (InterruptedException ex) {
                 Logger.getLogger(BankService.class.getName()).log(Level.SEVERE, null, ex);
-            }            finally
+            }            
+            finally
             {
                 s.close();
             }

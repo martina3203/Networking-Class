@@ -24,7 +24,8 @@ public class connectionHandler implements Runnable {
     {
         try {
             ServerSocket server = new ServerSocket(PORT_NUMBER);
-            while (portOpen == true){
+            while (portOpen == true)
+            {
                 Socket theSocket = server.accept();
                 System.out.println("Client connected.");
                 BankServer.incrementClientConnections();
