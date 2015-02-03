@@ -46,7 +46,6 @@ public class PenetrationTest {
         sixthThread.start();
         seventhThread.start();
         eighthThread.start();
-        //Wait for them to finish.
     }
     
 }
