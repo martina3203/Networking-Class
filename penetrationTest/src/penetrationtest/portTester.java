@@ -50,11 +50,9 @@ public class portTester implements Runnable {
                 if (portIsOpen == true)
                 {
                     //Add to list if Open
-                    portList.add(i);
                 }
                 else
                 {
-                    System.out.println(i + " is closed.");
                 }
                 if (newSocket != null)
                 {
